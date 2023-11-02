@@ -2,7 +2,7 @@ import { IPage, Stack } from "@cher-ami/compose"
 import HomePage from "../pages/HomePage"
 import AboutPage from "../pages/AboutPage"
 import WorkPage from "../pages/WorkPage"
-import debug from "@wbe/debug"
+import debug from "@cher-ami/debug"
 import Footer from "./Footer"
 const log = debug(`front:App`)
 

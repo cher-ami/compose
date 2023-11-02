@@ -1,6 +1,6 @@
 import { Component, COMPONENT_ATTR } from "./Component"
 import type { TProps } from "./Component"
-import debug from "@wbe/debug"
+import debug from "@cher-ami/debug"
 import { BrowserHistory, HashHistory, MemoryHistory } from "history"
 const log = debug("compose:Stack")
 

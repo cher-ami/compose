@@ -1,6 +1,6 @@
 import { Component } from "@cher-ami/compose"
 import MainButton from "./MainButton"
-import debug from "@wbe/debug"
+import debug from "@cher-ami/debug"
 const log = debug(`front:Header`)
 
 type TStaticProps = {}

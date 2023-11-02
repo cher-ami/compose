@@ -1,7 +1,7 @@
 import { Component } from "@cher-ami/compose"
 import Header from "../components/Header"
 import { defaultPlayIn, defaultPlayOut } from "../helpers/defaultTransitions"
-import debug from "@wbe/debug"
+import debug from "@cher-ami/debug"
 const log = debug(`front:WorkPage`)
 
 type TStaticProps = {}

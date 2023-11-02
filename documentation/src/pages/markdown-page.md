@@ -412,7 +412,7 @@ class App extends Stack {
 
 ## <a name="Debug"></a>Debug
 
-Compose comes with [`@wbe/debug`](https://github.com/willybrauner/debug) tool.
+Compose comes with [`@cher-ami/debug`](https://github.com/cher-ami/debug) tool.
 To get some additional logs, add this line on your browser console:
 
 ```shell

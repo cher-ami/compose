@@ -1,4 +1,4 @@
-import debug from "@wbe/debug"
+import debug from "@cher-ami/debug"
 import { uniqueID } from "./utils/uniqueID"
 const log = debug(`compose:Component`)
 

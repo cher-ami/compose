@@ -1,5 +1,5 @@
 import { Component } from "@cher-ami/compose"
-import debug from "@wbe/debug"
+import debug from "@cher-ami/debug"
 const log = debug(`front:MainButton`)
 
 /**
