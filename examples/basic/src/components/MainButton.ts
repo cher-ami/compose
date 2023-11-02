@@ -1,4 +1,4 @@
-import { Component } from "@wbe/compose"
+import { Component } from "@cher-ami/compose"
 import debug from "@wbe/debug"
 const log = debug(`front:MainButton`)
 

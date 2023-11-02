@@ -3,10 +3,10 @@
 
 ![](documentation/static/img/logo.png)
 
-![](https://img.shields.io/npm/v/@wbe/compose/latest.svg)
-![](https://img.shields.io/bundlephobia/minzip/@wbe/compose.svg)
-![](https://img.shields.io/npm/dt/@wbe/compose.svg)
-![](https://img.shields.io/npm/l/@wbe/compose.svg)
+![](https://img.shields.io/npm/v/@cher-ami/compose/latest.svg)
+![](https://img.shields.io/bundlephobia/minzip/@cher-ami/compose.svg)
+![](https://img.shields.io/npm/dt/@cher-ami/compose.svg)
+![](https://img.shields.io/npm/l/@cher-ami/compose.svg)
 
 Compose is a small and type-safe library that links your javascript to your DOM.  
 _⚠️ This library is work in progress, the API is subject to change until the v1.0 release._
@@ -28,7 +28,7 @@ Check the [full documentation website](https://willybrauner.github.io/compose)
 ```
 
 ```js
-import { Component } from "@wbe/compose"
+import { Component } from "@cher-ami/compose"
 
 class App extends Component {
   static attrName = "App"

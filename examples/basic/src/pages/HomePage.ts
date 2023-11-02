@@ -1,4 +1,4 @@
-import { Component } from "@wbe/compose"
+import { Component } from "@cher-ami/compose"
 import Header from "../components/Header"
 import { defaultPlayIn, defaultPlayOut } from "../helpers/defaultTransitions"
 import debug from "@wbe/debug"

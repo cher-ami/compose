@@ -1,4 +1,4 @@
-import { IPage, Stack } from "@wbe/compose"
+import { IPage, Stack } from "@cher-ami/compose"
 import HomePage from "../pages/HomePage"
 import AboutPage from "../pages/AboutPage"
 import WorkPage from "../pages/WorkPage"

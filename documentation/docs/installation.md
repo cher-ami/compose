@@ -6,11 +6,11 @@ title: Installation
 Installation with `npm`:
 
 ```shell
-$ npm i @wbe/compose
+$ npm i @cher-ami/compose
 ```
 
 Installation with `yarn`:
 
 ```shell
-$ yarn add @wbe/compose
+$ yarn add @cher-ami/compose
 ```

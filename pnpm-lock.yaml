@@ -70,7 +70,7 @@ importers:
 
   examples/basic:
     dependencies:
-      '@wbe/compose':
+      '@cher-ami/compose':
         specifier: latest
         version: link:../..
       gsap:

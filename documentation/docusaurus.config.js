@@ -55,7 +55,7 @@ const config = {
       },
 
       navbar: {
-        title: "@wbe/compose",
+        title: "@cher-ami/compose",
         logo: {
           alt: "compose logo",
           src: "img/logo.png",

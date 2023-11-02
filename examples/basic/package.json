@@ -8,7 +8,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@wbe/compose": "latest",
+    "@cher-ami/compose": "latest",
     "gsap": "^3.11.3"
   },
   "devDependencies": {

@@ -2,16 +2,16 @@
 title: Markdown page example
 ---
 
-# @wbe/compose
+# @cher-ami/compose
 
 Compose is a tiny zero dependency library for vanilla javascript component approach and page transitions management.
 
 > ⚠️ This library is work in progress, the API is subject to change until the v1.0 release.
 
-![](https://img.shields.io/npm/v/@wbe/compose/latest.svg)
-![](https://img.shields.io/bundlephobia/minzip/@wbe/compose.svg)
-![](https://img.shields.io/npm/dt/@wbe/compose.svg)
-![](https://img.shields.io/npm/l/@wbe/compose.svg)
+![](https://img.shields.io/npm/v/@cher-ami/compose/latest.svg)
+![](https://img.shields.io/bundlephobia/minzip/@cher-ami/compose.svg)
+![](https://img.shields.io/npm/dt/@cher-ami/compose.svg)
+![](https://img.shields.io/npm/l/@cher-ami/compose.svg)
 
 ## Summary
 
@@ -36,7 +36,7 @@ Compose is a tiny zero dependency library for vanilla javascript component appro
 ## <a name="Installation"></a>Installation
 
 ```shell
-$ npm i @wbe/compose
+$ npm i @cher-ami/compose
 ```
 
 ## <a name="Component"></a>Component
@@ -55,7 +55,7 @@ Set `data-component` name attribute on specific DOM element:
 Create a class extended by `Component`:
 
 ```js
-import { Component } from "@wbe/compose"
+import { Component } from "@cher-ami/compose"
 
 class App extends Component {
   static attrName = "App" // same value than `data-component` attribute
@@ -71,7 +71,7 @@ new App(document.querySelector(".App"))
 Each Component like `Header` child class component, need to extend `Component` class:
 
 ```js
-import { Component } from "@wbe/compose"
+import { Component } from "@cher-ami/compose"
 
 class Header extends Component {
   static attrName = "Header"

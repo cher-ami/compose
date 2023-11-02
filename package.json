@@ -1,5 +1,5 @@
 {
-  "name": "@wbe/compose",
+  "name": "@cher-ami/compose",
   "version": "0.15.2",
   "description": "Compose is a small and type-safe library that links your javascript to your DOM.",
   "author": "Willy Brauner",

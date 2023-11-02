@@ -15,7 +15,7 @@ title: DOM link
    `attrName` should get the same value that `data-component` attribute.
 
 ```js
-import { Component } from "@wbe/compose"
+import { Component } from "@cher-ami/compose"
 
 class App extends Component {
   static attrName = "App"
