@@ -2,9 +2,8 @@ import { Component, COMPONENT_ATTR } from "./Component"
 import type { TProps } from "./Component"
 import debug from "@cher-ami/debug"
 import { BrowserHistory, HashHistory, MemoryHistory } from "history"
-const log = debug("compose:Stack")
 import { deepComparison } from "./utils/deepComparison"
-import { s } from "vitest/dist/global-58e8e951"
+const log = debug("compose:Stack")
 
 export interface IPage {
   $pageRoot: HTMLElement
@@ -298,8 +297,6 @@ export class Stack<GProps = TProps> extends Component {
     const sameUrl = location.state?.sameUrl
     const locationValue = {path: location.pathname, search: location.search}
 
-
-    console.log(sameUrl)
     log("handleHistory > location value & current location", locationValue, this.currentLocation)
 
     if (!requestUrl ||  deepComparison(locationValue, this.currentLocation) || sameUrl) {
@@ -349,7 +346,6 @@ export class Stack<GProps = TProps> extends Component {
 
     // Start page transition manager who resolve newPage obj
     try {
-      console.log("handleHistory > start page transition manager")
       const newPage = await this.pageTransitionsMiddleware({
         currentPage: this.prepareCurrentPage(),
         mountNewPage: () => this.prepareMountNewPage(requestUrl, locationValue),
@@ -658,7 +654,6 @@ export class Stack<GProps = TProps> extends Component {
     instance,
     playIn: () => Promise<void>,
   ): void {
-    console.log(this.enableCache)
     if (!this.enableCache) {
       log("cache is disable, return")
       return
