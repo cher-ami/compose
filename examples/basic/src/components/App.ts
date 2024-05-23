@@ -1,9 +1,9 @@
-import { IPage, Stack } from "@cher-ami/compose"
 import HomePage from "../pages/HomePage"
 import AboutPage from "../pages/AboutPage"
 import WorkPage from "../pages/WorkPage"
 import debug from "@cher-ami/debug"
 import Footer from "./Footer"
+import { IPage, Stack } from "../../../../src"
 const log = debug(`front:App`)
 
 /**
@@ -11,11 +11,13 @@ const log = debug(`front:App`)
  */
 export class App extends Stack {
   public static attrName = "App"
+  // @ts-ignore
   public footer = this.add<Footer>(Footer)
 
   enableCache = true
   keepPageNumberDuringTransitions = 2
 
+  // @ts-ignore
   public addPages() {
     return {
       HomePage,
