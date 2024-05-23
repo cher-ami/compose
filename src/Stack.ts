@@ -30,11 +30,13 @@ type TCache = {
   playIn?
 }
 
+type TLocation = { path: string; search: string }
+
 const PARSER = new DOMParser()
 const PAGE_CONTAINER_ATTR = "data-page-transition-container"
 const PAGE_WRAPPER_ATTR = "data-page-transition-wrapper"
 const PAGE_URL_ATTR = "data-page-transition-url"
-const PAGE_SAME_URL_ATTR = "data-page-transition-same-url"
+const PAGE_TRANSITION_PARTIAL = "data-page-transition-partial"
 
 /**
  * Stack
@@ -101,7 +103,7 @@ export class Stack<GProps = TProps> extends Component {
    * the current search to request
    * @protected
    */
-  protected currentLocation: {path: string, search: string} = null
+  protected currentLocation: TLocation = null
 
   /**
    * current page {IPage}
@@ -271,7 +273,7 @@ export class Stack<GProps = TProps> extends Component {
 
     // get page url attr
     const url = event?.currentTarget?.getAttribute(PAGE_URL_ATTR)
-    const sameUrl = event?.currentTarget?.getAttribute(PAGE_SAME_URL_ATTR)
+    const partial = event?.currentTarget?.getAttribute(PAGE_TRANSITION_PARTIAL)
     // if disable transitions is active, open new page
     if (this.forcePageReload) {
       window.open(url, "_self")
@@ -282,7 +284,7 @@ export class Stack<GProps = TProps> extends Component {
     if (this.disableLinksDuringTransitions && this._pageIsAnimating) return
 
     // push it in history
-    this.history.push(url, { sameUrl: sameUrl === "true" })
+    this.history.push(url, { partial: partial === "true" })
   }
 
   /**
@@ -294,12 +296,13 @@ export class Stack<GProps = TProps> extends Component {
 
     // get URL to request
     const requestUrl = location.pathname
-    const sameUrl = location.state?.sameUrl
-    const locationValue = {path: location.pathname, search: location.search}
+    const partial = location.state?.partial
+    const locationValue: TLocation = {path: location.pathname, search: location.search}
 
     log("handleHistory > location value & current location", locationValue, this.currentLocation)
 
-    if (!requestUrl ||  deepComparison(locationValue, this.currentLocation) || sameUrl) {
+    // Compare if the request URL is the same as the current URL with the same search or if the sameUrl params is true
+    if (!requestUrl ||  deepComparison(locationValue, this.currentLocation) || partial) {
       this.currentLocation = {path: location.pathname, search: location.search}
       return
     }
@@ -407,7 +410,7 @@ export class Stack<GProps = TProps> extends Component {
    *  - prepare playIn
    * @param requestUrl
    */
-  private async prepareMountNewPage(requestUrl: string, location: { path: string, search: string }): Promise<IPage> {
+  private async prepareMountNewPage(requestUrl: string, location: TLocation): Promise<IPage> {
     const { $pageRoot, pageName, instance } = this.currentPage
 
     // prepare playIn transition for new Page used by pageTransitions method
@@ -442,6 +445,7 @@ export class Stack<GProps = TProps> extends Component {
 
     const cache = this._cache?.[requestUrl]
 
+    // if cache exist, use it instead of fetch new document
     if (cache && deepComparison(location, this.currentLocation)) {
       log("Use cache", cache)
       const { title, $pageRoot, pageName, playIn } = cache
