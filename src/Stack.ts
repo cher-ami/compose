@@ -1,7 +1,7 @@
 import { Component, COMPONENT_ATTR } from "./Component"
 import type { TProps } from "./Component"
 import debug from "@cher-ami/debug"
-import { BrowserHistory, HashHistory, MemoryHistory } from "history"
+import { Action, BrowserHistory, HashHistory, MemoryHistory } from "history"
 import { deepComparison } from "./utils/deepComparison"
 const log = debug("compose:Stack")
 
@@ -30,7 +30,7 @@ type TCache = {
   playIn?
 }
 
-type TLocation = { path: string; search: string }
+type TLocation = { path: string; search: string, partial?: boolean}
 
 const PARSER = new DOMParser()
 const PAGE_CONTAINER_ATTR = "data-page-transition-container"
@@ -76,6 +76,8 @@ export class Stack<GProps = TProps> extends Component {
    * enable pages cache
    */
   public enableCache: boolean = true
+
+  public locationHistory: TLocation[] = []
 
   /**
    * Register pages from parent class
@@ -247,9 +249,10 @@ export class Stack<GProps = TProps> extends Component {
   private initHistoryEvent() {
     this.removeHistory = this.history?.listen((state) => {
 
-  const { location } = state
+      console.log(state)
+    const { location, action } = state
       log("history.listen", state)
-      this.handleHistory(location)
+      this.handleHistory(location, action)
     })
   }
 
@@ -291,19 +294,25 @@ export class Stack<GProps = TProps> extends Component {
    * Handle history
    * @param pathname
    */
-  private handleHistory = async (location): Promise<void> => {
+  private handleHistory = async (location, action?: Action): Promise<void> => {
     if (this.disableHistoryDuringTransitions && this._pageIsAnimating) return
 
+
     // get URL to request
+    const isBackNavigation = action === "POP"
+    const latestLocation = this.locationHistory[this.locationHistory.length - 1]
+
     const requestUrl = location.pathname
     const partial = location.state?.partial
     const locationValue: TLocation = {path: location.pathname, search: location.search}
 
+
     log("handleHistory > location value & current location", locationValue, this.currentLocation)
 
     // Compare if the request URL is the same as the current URL with the same search or if the sameUrl params is true
-    if (!requestUrl ||  deepComparison(locationValue, this.currentLocation) || partial) {
-      this.currentLocation = {path: location.pathname, search: location.search}
+    if (!requestUrl ||  deepComparison(locationValue, this.currentLocation) || (partial && !isBackNavigation) || (isBackNavigation && latestLocation.partial && locationValue.path === latestLocation.path)) {
+      this.currentLocation = {path: location.pathname, search: location.search, partial}
+      this.locationHistory.push(this.currentLocation)
       return
     }
 
@@ -361,7 +370,8 @@ export class Stack<GProps = TProps> extends Component {
       throw new Error("Error on page transition middleware")
     }
 
-    this.currentLocation = {path: location.pathname, search: location.search}
+    this.currentLocation = {path: location.pathname, search: location.search, partial}
+    this.locationHistory.push(this.currentLocation)
   }
 
   /**
