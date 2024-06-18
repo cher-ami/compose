@@ -360,7 +360,7 @@ export class Stack<GProps = TProps> extends Component {
     }
 
     // Start page transition manager who resolve newPage obj
-    const fetchUrl = location.pathname + location.search
+    const fetchUrl = location.pathname + (location?.search || '')
     try {
       const newPage = await this.pageTransitionsMiddleware({
         currentPage: this.prepareCurrentPage(),
