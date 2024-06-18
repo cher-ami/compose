@@ -305,12 +305,16 @@ export class Stack<GProps = TProps> extends Component {
     const partial = location.state?.partial
     const locationValue: TLocation = {path: location.pathname, search: location.search}
 
+    let baseCurrentLocation: TLocation = {path: location.pathname, search: location.search}
+
+    if (partial) baseCurrentLocation.partial = true
+
 
     log("handleHistory > location value & current location", locationValue, this.currentLocation)
 
     // Compare if the request URL is the same as the current URL with the same search or if the sameUrl params is true
     if (!requestUrl ||  deepComparison(locationValue, this.currentLocation) || (partial && !isBackNavigation) || (isBackNavigation && latestLocation.partial && locationValue.path === latestLocation.path)) {
-      this.currentLocation = {path: location.pathname, search: location.search, partial}
+      this.currentLocation = baseCurrentLocation
       this.locationHistory.push(this.currentLocation)
       return
     }
@@ -369,7 +373,7 @@ export class Stack<GProps = TProps> extends Component {
       throw new Error("Error on page transition middleware")
     }
 
-    this.currentLocation = {path: location.pathname, search: location.search, partial}
+    this.currentLocation = baseCurrentLocation
     this.locationHistory.push(this.currentLocation)
   }
 
