@@ -1,7 +1,8 @@
 import { Component, COMPONENT_ATTR } from "./Component"
 import type { TProps } from "./Component"
 import debug from "@cher-ami/debug"
-import { BrowserHistory, HashHistory, MemoryHistory } from "history"
+import { Action, BrowserHistory, HashHistory, MemoryHistory } from "history"
+import { deepComparison } from "./utils/deepComparison"
 const log = debug("compose:Stack")
 
 export interface IPage {
@@ -29,10 +30,13 @@ type TCache = {
   playIn?
 }
 
+type TLocation = { path: string; search: string, partial?: boolean}
+
 const PARSER = new DOMParser()
 const PAGE_CONTAINER_ATTR = "data-page-transition-container"
 const PAGE_WRAPPER_ATTR = "data-page-transition-wrapper"
 const PAGE_URL_ATTR = "data-page-transition-url"
+const PAGE_TRANSITION_PARTIAL = "data-page-transition-partial"
 
 /**
  * Stack
@@ -73,6 +77,8 @@ export class Stack<GProps = TProps> extends Component {
    */
   public enableCache: boolean = true
 
+  public locationHistory: TLocation[] = []
+
   /**
    * Register pages from parent class
    * @returns
@@ -94,6 +100,12 @@ export class Stack<GProps = TProps> extends Component {
    *  the current URL to request
    */
   protected currentUrl: string = null
+
+  /**
+   * the current search to request
+   * @protected
+   */
+  protected currentLocation: TLocation = null
 
   /**
    * current page {IPage}
@@ -185,7 +197,7 @@ export class Stack<GProps = TProps> extends Component {
    * @protected
    */
   protected start(): void {
-    this.handleHistory(window.location.pathname || "/")
+    this.handleHistory(window.location || "/")
     this.initHistoryEvent()
     this.listenLinks()
   }
@@ -235,8 +247,11 @@ export class Stack<GProps = TProps> extends Component {
    * @private
    */
   private initHistoryEvent() {
-    this.removeHistory = this.history?.listen(({ location }) => {
-      this.handleHistory(location.pathname)
+    this.removeHistory = this.history?.listen((state) => {
+
+    const { location, action } = state
+      log("history.listen", state)
+      this.handleHistory(location, action)
     })
   }
 
@@ -260,6 +275,7 @@ export class Stack<GProps = TProps> extends Component {
 
     // get page url attr
     const url = event?.currentTarget?.getAttribute(PAGE_URL_ATTR)
+    const partial = event?.currentTarget?.getAttribute(PAGE_TRANSITION_PARTIAL)
     // if disable transitions is active, open new page
     if (this.forcePageReload) {
       window.open(url, "_self")
@@ -270,21 +286,38 @@ export class Stack<GProps = TProps> extends Component {
     if (this.disableLinksDuringTransitions && this._pageIsAnimating) return
 
     // push it in history
-    this.history.push(url)
+    this.history.push(url, { partial: partial === "true" })
   }
 
   /**
    * Handle history
    * @param pathname
    */
-  private handleHistory = async (pathname): Promise<void> => {
+  private handleHistory = async (location, action?: Action): Promise<void> => {
     if (this.disableHistoryDuringTransitions && this._pageIsAnimating) return
 
-    // get URL to request
-    const requestUrl = pathname
 
-    log("handleHistory > requestUrl", requestUrl)
-    if (!requestUrl || requestUrl === this.currentUrl) return
+    // get URL to request
+    const isBackNavigation = action === "POP"
+    const latestLocation = this.locationHistory[this.locationHistory.length - 1]
+
+    const requestUrl = location.pathname
+    const partial = location.state?.partial
+    const locationValue: TLocation = {path: location.pathname, search: location.search}
+
+    let baseCurrentLocation: TLocation = {path: location.pathname, search: location.search}
+
+    if (partial) baseCurrentLocation.partial = true
+
+
+    log("handleHistory > location value & current location", locationValue, this.currentLocation)
+
+    // Compare if the request URL is the same as the current URL with the same search or if the sameUrl params is true
+    if (!requestUrl ||  deepComparison(locationValue, this.currentLocation) || (partial && !isBackNavigation) || (isBackNavigation && latestLocation.partial && locationValue.path === latestLocation.path)) {
+      this.currentLocation = baseCurrentLocation
+      this.locationHistory.push(this.currentLocation)
+      return
+    }
 
     if (
       (this.forcePageReloadIfDocumentIsFetching && this._fetching) ||
@@ -330,7 +363,7 @@ export class Stack<GProps = TProps> extends Component {
     try {
       const newPage = await this.pageTransitionsMiddleware({
         currentPage: this.prepareCurrentPage(),
-        mountNewPage: () => this.prepareMountNewPage(requestUrl),
+        mountNewPage: () => this.prepareMountNewPage(requestUrl, locationValue),
       })
       this.isFirstPage = false
       this.prevPage = this.currentPage
@@ -339,6 +372,9 @@ export class Stack<GProps = TProps> extends Component {
     } catch (e) {
       throw new Error("Error on page transition middleware")
     }
+
+    this.currentLocation = baseCurrentLocation
+    this.locationHistory.push(this.currentLocation)
   }
 
   /**
@@ -387,7 +423,7 @@ export class Stack<GProps = TProps> extends Component {
    *  - prepare playIn
    * @param requestUrl
    */
-  private async prepareMountNewPage(requestUrl: string): Promise<IPage> {
+  private async prepareMountNewPage(requestUrl: string, location: TLocation): Promise<IPage> {
     const { $pageRoot, pageName, instance } = this.currentPage
 
     // prepare playIn transition for new Page used by pageTransitions method
@@ -409,7 +445,7 @@ export class Stack<GProps = TProps> extends Component {
         $pageRoot,
         pageName,
         instance,
-        () => preparePlayIn(instance)
+        () => preparePlayIn(instance),
       )
 
       return {
@@ -421,7 +457,9 @@ export class Stack<GProps = TProps> extends Component {
     }
 
     const cache = this._cache?.[requestUrl]
-    if (cache) {
+
+    // if cache exist, use it instead of fetch new document
+    if (cache && deepComparison(location, this.currentLocation)) {
       log("Use cache", cache)
       const { title, $pageRoot, pageName, playIn } = cache
 
@@ -631,7 +669,7 @@ export class Stack<GProps = TProps> extends Component {
     $pageRoot: HTMLElement,
     pageName: string,
     instance,
-    playIn: () => Promise<void>
+    playIn: () => Promise<void>,
   ): void {
     if (!this.enableCache) {
       log("cache is disable, return")
