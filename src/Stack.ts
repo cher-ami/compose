@@ -249,7 +249,6 @@ export class Stack<GProps = TProps> extends Component {
   private initHistoryEvent() {
     this.removeHistory = this.history?.listen((state) => {
 
-      console.log(state)
     const { location, action } = state
       log("history.listen", state)
       this.handleHistory(location, action)
